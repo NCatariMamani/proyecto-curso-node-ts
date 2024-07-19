@@ -13,9 +13,163 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model users {
   id    Int     @id @default(autoincrement())
   email String  @unique
   password  String
 }
+
+model alojamientos {
+  id    Int     @id @default(autoincrement())
+  nombre String  
+  noHabitaciones Int
+  direccion String
+  compras compras[]
+  encargados encargados[]
+  habitaciones habitaciones[]
+  inventarios inventarios[]
+  productoCompras productoCompras[]
+  productoInventarios productoInventarios[]
+  created_at DateTime
+  updated_at DateTime?
+}
+
+model compras {
+  id    Int     @id @default(autoincrement())
+  fecha DateTime
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model encargados {
+  id    Int     @id @default(autoincrement())
+  nombre String
+  paterno String
+  materno String
+  ci Int
+  ext String
+  celular Int
+  reservaciones reservaciones[]
+  alojamientoId Int
+  alojamiento alojamientos @relation(fields: [alojamientoId], references: [id])
+  userId Int
+  created_at DateTime
+  updated_at DateTime
+}
+
+model habitaciones {
+  id    Int     @id @default(autoincrement())
+  noHabitacion Int
+  preferencias String
+  estado String
+  reservaciones reservaciones[]
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model inventarios {
+  id    Int     @id @default(autoincrement())
+  descricpion String
+  fecha DateTime
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model productos {
+  id    Int     @id @default(autoincrement())
+  nombre String
+  precio Float
+  productoCompras productoCompras[]
+  productoInventarios productoInventarios[] 
+  productoVentas productoVentas[]
+  created_at DateTime
+  updated_at DateTime
+}
+
+model productoCompras {
+  id    Int     @id @default(autoincrement())
+  productoId Int
+  productos productos @relation(fields: [productoId],references: [id])
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model productoInventarios {
+  id    Int     @id @default(autoincrement())
+  cantidad Int
+  entrada Int
+  salida Int 
+  stock Int
+  fecha DateTime
+  hora String
+  productoId Int
+  productos productos @relation(fields: [productoId],references: [id])
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model reservaciones {
+  id    Int     @id @default(autoincrement())
+  nombre String
+  paterno String
+  materno String
+  edad Int
+  ci Int
+  extencion String
+  nombreA String
+  paternoA String
+  maternoA String
+  edadA Int
+  ciA Int
+  extencionA String
+  fecha DateTime
+  horaEntrada String
+  horaSalida String
+  tiempo String
+  compania String
+  costoHabitacion Float
+  costoExtra Float
+  total Float
+  ventas ventas[]
+  habitacionId Int
+  habitaciones habitaciones @relation(fields: [habitacionId], references: [id])
+  encargadoId Int
+  encargados encargados @relation(fields: [encargadoId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model ventas {
+  id    Int     @id @default(autoincrement())
+  fecha Float
+  reservacionId Int
+  productoVentas productoVentas[]
+  reservaciones reservaciones @relation(fields: [reservacionId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+model productoVentas {
+  id    Int     @id @default(autoincrement())
+  productoId Int
+  productos productos @relation(fields: [productoId], references: [id])
+  ventaId Int
+  ventas ventas @relation(fields: [ventaId], references: [id])
+  created_at DateTime
+  updated_at DateTime
+}
+
+
+
+
 
