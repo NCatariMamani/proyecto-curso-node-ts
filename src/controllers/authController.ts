@@ -3,6 +3,7 @@ import { comparePasswords, hashPasword } from '../services/password.service';
 import prisma from '../models/user';
 import { generateToken } from '../services/auth.service';
 
+
 export const register = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
@@ -17,10 +18,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         } 
         const hashedPassword = await hashPasword(password)
         console.log(hashedPassword)
-        const user = await prisma.create({
-            data: { email, password: hashedPassword }
+        const users = await prisma.create({
+            data: { email, password: hashedPassword}
         })
-        const token = generateToken(user)
+        const token = generateToken(users)
         res.status(200).json({token})
     } catch (error: any) {
         if(error?.code === 'P2002' && error?.meta?.target?.includes('email')){

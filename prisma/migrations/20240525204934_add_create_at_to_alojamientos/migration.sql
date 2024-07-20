@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "alojamientos" ADD COLUMN     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
