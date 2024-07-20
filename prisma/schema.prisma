@@ -13,11 +13,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model users {
   id    Int     @id @default(autoincrement())
   email String  @unique
   password  String
+  encargados encargados[]
+  roles     Role[]    @relation("usersRoles")
 }
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  permissions Permission[] @relation("RolePermissions")
+  users       users[]    @relation("usersRoles")
+}
+
+model Permission {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  roles     Role[]  @relation("RolePermissions")
+}
+
+
 
 model alojamientos {
   id    Int     @id @default(autoincrement())
@@ -40,7 +58,7 @@ model compras {
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model encargados {
@@ -56,7 +74,7 @@ model encargados {
   alojamiento alojamientos @relation(fields: [alojamientoId], references: [id])
   userId Int
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model habitaciones {
@@ -68,7 +86,7 @@ model habitaciones {
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model inventarios {
@@ -78,7 +96,7 @@ model inventarios {
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model productos {
@@ -89,7 +107,7 @@ model productos {
   productoInventarios productoInventarios[] 
   productoVentas productoVentas[]
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model productoCompras {
@@ -99,7 +117,7 @@ model productoCompras {
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model productoInventarios {
@@ -115,7 +133,7 @@ model productoInventarios {
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model reservaciones {
@@ -146,7 +164,7 @@ model reservaciones {
   encargadoId Int
   encargados encargados @relation(fields: [encargadoId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model ventas {
@@ -156,7 +174,7 @@ model ventas {
   productoVentas productoVentas[]
   reservaciones reservaciones @relation(fields: [reservacionId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 model productoVentas {
@@ -166,7 +184,7 @@ model productoVentas {
   ventaId Int
   ventas ventas @relation(fields: [ventaId], references: [id])
   created_at DateTime
-  updated_at DateTime
+  updated_at DateTime?
 }
 
 
