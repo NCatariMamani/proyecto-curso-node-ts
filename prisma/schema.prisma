@@ -73,6 +73,7 @@ model encargados {
   alojamientoId Int
   alojamiento alojamientos @relation(fields: [alojamientoId], references: [id])
   userId Int
+  user users @relation(fields: [userId], references: [id])
   created_at DateTime
   updated_at DateTime?
 }
@@ -91,7 +92,7 @@ model habitaciones {
 
 model inventarios {
   id    Int     @id @default(autoincrement())
-  descricpion String
+  descripcion String
   fecha DateTime
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
@@ -144,15 +145,15 @@ model reservaciones {
   edad Int
   ci Int
   extencion String
-  nombreA String
-  paternoA String
-  maternoA String
-  edadA Int
-  ciA Int
-  extencionA String
+  nombreA String?
+  paternoA String?
+  maternoA String?
+  edadA Int?
+  ciA Int?
+  extencionA String?
   fecha DateTime
   horaEntrada String
-  horaSalida String
+  horaSalida String?
   tiempo String
   compania String
   costoHabitacion Float
@@ -169,7 +170,7 @@ model reservaciones {
 
 model ventas {
   id    Int     @id @default(autoincrement())
-  fecha Float
+  fecha DateTime
   reservacionId Int
   productoVentas productoVentas[]
   reservaciones reservaciones @relation(fields: [reservacionId], references: [id])

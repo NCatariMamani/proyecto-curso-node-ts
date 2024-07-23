@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
-import prisma from '../models/habitacion';
+import prisma from '../models/productoVenta';
 
 
-export const createHabitacion = async (req: Request, res: Response): Promise<void> => {
+export const createProductoVenta = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { noHabitacion, preferencias, estado, alojamientoId } = req.body;
+        const { productoId, ventaId } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -17,12 +17,12 @@ export const createHabitacion = async (req: Request, res: Response): Promise<voi
         //const hashedPassword = await hashPasword(password)
         const varnull:any = null
 
-        const habitacion = await prisma.create({
+        const productoVenta = await prisma.create({
             data: {
-                 noHabitacion, preferencias, estado, alojamientoId,  created_at: new Date().toISOString(), updated_at: varnull
+                productoId, ventaId , created_at: new Date().toISOString(), updated_at: varnull
             }
         })
-        res.status(201).json(habitacion)
+        res.status(201).json(productoVenta)
 
     } catch (error: any) {
         /*if(error?.code === 'P2002' && error?.meta?.target?.includes('email')){
@@ -34,66 +34,60 @@ export const createHabitacion = async (req: Request, res: Response): Promise<voi
     }
 }
 
-export const getallHabitaciones = async (req: Request, res: Response): Promise<void> => {
+export const getallProductoVentas = async (req: Request, res: Response): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
     try {
-        const habitaciones = await prisma.findMany({
+        const productoVentas = await prisma.findMany({
             skip: skip,
             take: limit,
         })
-        res.status(200).json(habitaciones)
+        res.status(200).json(productoVentas)
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
 
-export const getallHabitacionesById = async (req: Request, res: Response): Promise<void> => {
-    const habitacionId = parseInt(req.params.id)
+export const getallProductoVentaById = async (req: Request, res: Response): Promise<void> => {
+    const productoId = parseInt(req.params.id)
     try {
-        const habitacion = await prisma.findUnique({
+        const productoVenta = await prisma.findUnique({
             where: {
-                id: habitacionId
+                id: productoId
             }
         })
-        if (!habitacion) {
+        if (!productoVenta) {
             res.status(404).json({ error: 'El alojamiento no fue encontrado' })
             return
         }
-        res.status(200).json(habitacion)
+        res.status(200).json(productoVenta)
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
 
-export const updateHabitacion = async (req: Request, res: Response): Promise<void> => {
-    const habitacionId = parseInt(req.params.id)
-    const { noHabitacion, preferencias, estado, alojamientoId } = req.body;
+export const updateProductoVenta = async (req: Request, res: Response): Promise<void> => {
+    const productoVentaId = parseInt(req.params.id)
+    const { productoId, ventaId } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
-        if (noHabitacion) {
-            dataToUpdate.noHabitacion = noHabitacion
+        if (productoId) {
+            dataToUpdate.productoId = productoId
         }
-        if (preferencias) {
-            dataToUpdate.preferencias = preferencias
-        }
-        if (estado) {
-            dataToUpdate.estado = estado
-        }
-        if (alojamientoId) {
-            dataToUpdate.alojamientoId = alojamientoId
+        if (ventaId) {
+            dataToUpdate.ventaId = ventaId
         }
         dataToUpdate.updated_at = new Date().toISOString()
 
-        const habitacion = await prisma.update({
+        const productoVenta = await prisma.update({
             where: {
-                id: habitacionId
+                id: productoVentaId
             }, data: dataToUpdate
         })
-        res.status(200).json(habitacion)
+        res.status(200).json(productoVenta)
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Alojamiento no encontrado' })
@@ -107,16 +101,16 @@ export const updateHabitacion = async (req: Request, res: Response): Promise<voi
     }
 }
 
-export const deleteHabitacion = async (req: Request, res: Response): Promise<void> => {
-    const habitaconId = parseInt(req.params.id)
+export const deleteProductoVenta = async (req: Request, res: Response): Promise<void> => {
+    const productoVentaId = parseInt(req.params.id)
     try {
         await prisma.delete({
             where: {
-                id: habitaconId
+                id: productoVentaId
             }
         })
         res.status(200).json({
-            message: `El usuario ${habitaconId} ha sido eliminado`
+            message: `El usuario ${productoVentaId} ha sido eliminado`
         }).end()
     } catch (error: any) {
         if (error?.code === 'P2025') {

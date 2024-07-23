@@ -25,11 +25,11 @@ export const createCompra = async (req: Request, res: Response): Promise<void> =
         res.status(201).json(compra)
 
     } catch (error: any) {
-        /*if(error?.code === 'P2002' && error?.meta?.target?.includes('email')){
-            res.status(404).json({message: 'El mail ingresado ya existe'})
+        if(error.code === 'P2003'){
+            res.status(404).json({message: 'No existe Id de ese alojamiento'})
             return
-        }*/
-        console.log(error);
+        }
+        console.log(error.code);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
@@ -92,6 +92,10 @@ export const updateCompra = async (req: Request, res: Response): Promise<void> =
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Alojamiento no encontrado' })
+            return
+        } else if (error?.code === 'P2003') {
+            console.log(error);
+            res.status(500).json({ error: 'No existe Id de ese alojamiento' })
             return
         } else {
             console.log(error);

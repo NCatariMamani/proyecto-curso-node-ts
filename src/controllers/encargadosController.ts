@@ -19,7 +19,7 @@ export const createEncargado = async (req: Request, res: Response): Promise<void
 
         const encargado = await prisma.create({
             data: {
-                nombre,paterno,materno,ci,ext,celular,alojamientoId, userId, created_at: new Date().toISOString(), updated_at: varnull
+                nombre,paterno,materno,ci,ext,celular,alojamientoId, userId, created_at: new Date().toISOString(), updated_at: varnull 
             }
         })
         res.status(201).json(encargado)

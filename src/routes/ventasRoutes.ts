@@ -1,6 +1,6 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createHabitacion, deleteHabitacion, getallHabitaciones, getallHabitacionesById, updateHabitacion } from '../controllers/habitacionesController';
+import { createVenta, deleteVenta, getallVentas, getallVentaById, updateVenta } from '../controllers/ventasController';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
@@ -23,11 +23,11 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-router.post('/', authenticateToken, createHabitacion)
-router.get('/', authenticateToken,  getallHabitaciones)
-router.get('/:id', authenticateToken,  getallHabitacionesById)
-router.put('/:id', authenticateToken,  updateHabitacion)
-router.delete('/:id', authenticateToken,  deleteHabitacion)
+router.post('/', authenticateToken, createVenta)
+router.get('/', authenticateToken,  getallVentas)
+router.get('/:id', authenticateToken,  getallVentaById)
+router.put('/:id', authenticateToken,  updateVenta)
+router.delete('/:id', authenticateToken,  deleteVenta)
 
 
 export default router;
