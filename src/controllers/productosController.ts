@@ -42,8 +42,15 @@ export const getallProductos = async (req: Request, res: Response): Promise<void
         const productos = await prisma.findMany({
             skip: skip,
             take: limit,
+            orderBy: {
+                created_at: 'desc'
+            }
         })
-        res.status(200).json(productos)
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: productos
+        })
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })

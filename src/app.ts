@@ -13,25 +13,31 @@ import productoCompras from './routes/productoComprasRoutes';
 import productoInventarios from './routes/productoInventariosRoutes';
 import recervaciones from './routes/recervacionesRoutes';
 import ventas from './routes/ventasRoutes';
-import productoVentas from './routes/productoVentasRoutes'
+import productoVentas from './routes/productoVentasRoutes';
+const cors = require('cors');
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:4200'
+}));
 
 //Routes
 app.use('/auth', authRoutes)
-app.use('/users', usersRoutes)
-app.use('/alojamientos', alojamientosRoutes)
-app.use('/compras', comprasRoutes)
-app.use('/encargados', encargadosRoutes)
-app.use('/habitaciones', habitacionesRoutes)
-app.use('/inventarios', inventariosRoutes)
-app.use('/productos', productosRoutes)
-app.use('/productoCompras', productoCompras)
-app.use('/productoInventarios', productoInventarios)
-app.use('/recervaciones', recervaciones)
-app.use('/ventas', ventas)
-app.use('/productoVentas', productoVentas)
+app.use('/catalog/users', usersRoutes)
+app.use('/catalog/alojamientos', alojamientosRoutes)
+app.use('/catalog/compras', comprasRoutes)
+app.use('/catalog/encargados', encargadosRoutes)
+app.use('/catalog/habitaciones', habitacionesRoutes)
+app.use('/catalog/inventarios', inventariosRoutes)
+app.use('/catalog/productos', productosRoutes)
+app.use('/catalog/productoCompras', productoCompras)
+app.use('/catalog/productoInventarios', productoInventarios)
+app.use('/catalog/recervaciones', recervaciones)
+app.use('/catalog/ventas', ventas)
+app.use('/catalog/productoVentas', productoVentas)
+
+
 
 //Hacer una api rest de usuarios
 
