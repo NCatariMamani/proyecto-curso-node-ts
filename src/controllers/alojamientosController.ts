@@ -42,8 +42,15 @@ export const getallAlojas = async (req: Request, res: Response): Promise<void> =
         const alojas = await prisma.findMany({
             skip: skip,
             take: limit,
+            orderBy: {
+                created_at: 'desc'
+            }
         })
-        res.status(200).json(alojas)
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: alojas
+        })
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
@@ -62,7 +69,11 @@ export const getallAlojasById = async (req: Request, res: Response): Promise<voi
             res.status(404).json({ error: 'El alojamiento no fue encontrado' })
             return
         }
-        res.status(200).json(aloja)
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: aloja
+        })
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })

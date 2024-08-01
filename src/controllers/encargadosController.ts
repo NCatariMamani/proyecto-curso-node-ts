@@ -42,8 +42,15 @@ export const getallEncargados = async (req: Request, res: Response): Promise<voi
         const encargados = await prisma.findMany({
             skip: skip,
             take: limit,
+            orderBy: {
+                created_at: 'desc'
+            }
         })
-        res.status(200).json(encargados)
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: encargados
+        })
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })

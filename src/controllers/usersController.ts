@@ -35,7 +35,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 export const getallUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await prisma.findMany()
-        res.status(200).json(users)
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: users
+        })
     } catch (error: any) {
         console.log(error);
         res.status(500).json({error: 'Hubo un error, pruebe mas tarde'})
