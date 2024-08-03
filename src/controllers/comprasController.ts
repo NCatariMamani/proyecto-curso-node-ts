@@ -54,11 +54,20 @@ export const getallCompras = async (req: Request, res: Response): Promise<void> 
                 };
             }else if (op === '$eq') {
                 where[field] = Number(filterValue);
+            }else if (op === '$gte') {
+                where[field] = {
+                    gte: new Date(filterValue)
+                };
+            } else if (op === '$lte') {
+                where[field] = {
+                    lte: new Date(filterValue)
+                };
             }
         }
     }
 
     try {
+
         
         const compras = await prisma.findMany({
             skip: skip,
@@ -66,6 +75,8 @@ export const getallCompras = async (req: Request, res: Response): Promise<void> 
             where,
             orderBy: {
                 created_at: 'desc'
+            },include: {
+                alojamientos: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
