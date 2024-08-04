@@ -15,7 +15,9 @@ export const createCompra = async (req: Request, res: Response): Promise<void> =
             return
         } */
         //const hashedPassword = await hashPasword(password)
-        const varnull:any = null
+        const varnull: any = null
+
+        
 
         const compra = await prisma.create({
             data: {
@@ -25,8 +27,8 @@ export const createCompra = async (req: Request, res: Response): Promise<void> =
         res.status(201).json(compra)
 
     } catch (error: any) {
-        if(error.code === 'P2003'){
-            res.status(404).json({message: 'No existe Id de ese alojamiento'})
+        if (error.code === 'P2003') {
+            res.status(404).json({ message: 'No existe Id de ese alojamiento' })
             return
         }
         console.log(error.code);
@@ -47,35 +49,60 @@ export const getallCompras = async (req: Request, res: Response): Promise<void> 
             const value = req.query[key] as string;
             const [op, filterValue] = value.split(':');
 
-            if (op === '$ilike') {
-                where[field] = {
-                    contains: filterValue,
-                    mode: 'insensitive' // Para búsqueda case-insensitive
-                };
-            }else if (op === '$eq') {
-                where[field] = Number(filterValue);
-            }else if (op === '$gte') {
-                where[field] = {
-                    gte: new Date(filterValue)
-                };
-            } else if (op === '$lte') {
-                where[field] = {
-                    lte: new Date(filterValue)
-                };
+            if (field.includes('.')) {
+                const [relation, fieldName] = field.split('.');
+
+                if (!where[relation]) {
+                    where[relation] = {};
+                }
+
+                if (op === '$ilike') {
+                    where[relation][fieldName] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    where[relation][fieldName] = filterValue;
+                }
+            } else{
+                if (op === '$ilike') {
+                    where[field] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    if (field === 'fecha') {
+                        const date = String(filterValue);
+                        const newDate = new Date(date);
+                        if (date.toString() !== 'Invalid Date') {
+                            // Ajuste para comparar solo la parte de la fecha
+                            const startOfDay = new Date(newDate.setUTCHours(0, 0, 0, 0));
+                            const endOfDay = new Date(newDate.setUTCHours(23, 59, 59, 999));
+                            where[field] = {
+                                gte: startOfDay,
+                                lte: endOfDay
+                            };
+                        }
+                    } else {
+                        where[field] = Number(filterValue);
+                    }
+                }
             }
+
+            
         }
     }
 
     try {
 
-        
+
         const compras = await prisma.findMany({
             skip: skip,
             take: limit,
             where,
             orderBy: {
                 created_at: 'desc'
-            },include: {
+            }, include: {
                 alojamientos: true // Incluye los detalles del alojamiento
             }
         });
@@ -86,7 +113,7 @@ export const getallCompras = async (req: Request, res: Response): Promise<void> 
             data: compras,
             count: totalRecords
         });
-        
+
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
@@ -164,7 +191,10 @@ export const deleteCompra = async (req: Request, res: Response): Promise<void> =
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
             return
-        } else {
+        } else if(error?.code === 'P2003'){
+            res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
+            return
+        }else {
             console.log(error);
             res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
             return

@@ -154,6 +154,9 @@ export const deleteHabitacion = async (req: Request, res: Response): Promise<voi
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
             return
+        } else if(error?.code === 'P2003'){
+            res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
+            return
         } else {
             console.log(error);
             res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
