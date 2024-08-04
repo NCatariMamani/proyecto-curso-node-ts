@@ -54,7 +54,21 @@ export const getallVentas = async (req: Request, res: Response): Promise<void> =
                     mode: 'insensitive' // Para búsqueda case-insensitive
                 };
             }else if (op === '$eq') {
-                where[field] = Number(filterValue);
+                if (field === 'fecha') {
+                    const date = String(filterValue);
+                    const newDate = new Date(date);
+                    if (date.toString() !== 'Invalid Date') {
+                        // Ajuste para comparar solo la parte de la fecha
+                        const startOfDay = new Date(newDate.setUTCHours(0, 0, 0, 0));
+                        const endOfDay = new Date(newDate.setUTCHours(23, 59, 59, 999));
+                        where[field] = {
+                            gte: startOfDay,
+                            lte: endOfDay
+                        };
+                    }
+                } else {
+                    where[field] = Number(filterValue);
+                }
             }
         }
     }
@@ -147,6 +161,9 @@ export const deleteVenta = async (req: Request, res: Response): Promise<void> =>
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
+            return
+        } else if(error?.code === 'P2003'){
+            res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
             return
         } else {
             console.log(error);
