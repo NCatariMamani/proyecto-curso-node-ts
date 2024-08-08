@@ -15,11 +15,11 @@ export const createHabitacion = async (req: Request, res: Response): Promise<voi
             return
         } */
         //const hashedPassword = await hashPasword(password)
-        const varnull:any = null
+        const varnull: any = null
 
         const habitacion = await prisma.create({
             data: {
-                 noHabitacion, preferencias, estado, alojamientoId,  created_at: new Date().toISOString(), updated_at: varnull
+                noHabitacion, preferencias, estado, alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(habitacion)
@@ -47,14 +47,31 @@ export const getallHabitaciones = async (req: Request, res: Response): Promise<v
             const field = key.replace('filter.', '');
             const value = req.query[key] as string;
             const [op, filterValue] = value.split(':');
+            if (field.includes('.')) {
+                const [relation, fieldName] = field.split('.');
 
-            if (op === '$ilike') {
-                where[field] = {
-                    contains: filterValue,
-                    mode: 'insensitive' // Para búsqueda case-insensitive
-                };
-            }else if (op === '$eq') {
-                where[field] = Number(filterValue);
+                if (!where[relation]) {
+                    where[relation] = {};
+                }
+
+                if (op === '$ilike') {
+                    where[relation][fieldName] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    where[relation][fieldName] = filterValue;
+                }
+            } else {
+
+                if (op === '$ilike') {
+                    where[field] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    where[field] = Number(filterValue);
+                }
             }
         }
     }
@@ -66,6 +83,8 @@ export const getallHabitaciones = async (req: Request, res: Response): Promise<v
             where,
             orderBy: {
                 created_at: 'desc'
+            }, include: {
+                alojamientos: true // Incluye los detalles del alojamiento
             }
         })
         const totalRecords = await prisma.count({ where });
@@ -154,7 +173,7 @@ export const deleteHabitacion = async (req: Request, res: Response): Promise<voi
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
             return
-        } else if(error?.code === 'P2003'){
+        } else if (error?.code === 'P2003') {
             res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
             return
         } else {
