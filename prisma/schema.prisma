@@ -128,7 +128,6 @@ model productoInventarios {
   salida Int 
   stock Int
   fecha DateTime
-  hora String
   productoId Int
   productos productos @relation(fields: [productoId],references: [id])
   alojamientoId Int

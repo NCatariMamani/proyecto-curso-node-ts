@@ -5,7 +5,7 @@ import prisma from '../models/productoInventario';
 
 export const createProductoInventario = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { cantidad, entrada, salida, stock, fecha, hora, productoId, alojamientoId } = req.body;
+        const { cantidad, entrada, salida, stock, fecha, productoId, alojamientoId } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createProductoInventario = async (req: Request, res: Response): Pro
 
         const producto = await prisma.create({
             data: {
-                cantidad, entrada, salida, stock, fecha, hora, productoId, alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
+                cantidad, entrada, salida, stock, fecha, productoId, alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(producto)
@@ -48,28 +48,45 @@ export const getallProductoInventarios = async (req: Request, res: Response): Pr
             const value = req.query[key] as string;
             const [op, filterValue] = value.split(':');
 
-            if (op === '$ilike') {
-                where[field] = {
-                    contains: filterValue,
-                    mode: 'insensitive' // Para búsqueda case-insensitive
-                };
-            }else if (op === '$eq') {
-                if (field === 'fecha') {
-                    const date = String(filterValue);
-                    const newDate = new Date(date);
-                    if (date.toString() !== 'Invalid Date') {
-                        // Ajuste para comparar solo la parte de la fecha
-                        const startOfDay = new Date(newDate.setUTCHours(0, 0, 0, 0));
-                        const endOfDay = new Date(newDate.setUTCHours(23, 59, 59, 999));
-                        where[field] = {
-                            gte: startOfDay,
-                            lte: endOfDay
-                        };
-                    }
-                } else {
-                    where[field] = Number(filterValue);
+            if (field.includes('.')) {
+                const [relation, fieldName] = field.split('.');
+
+                if (!where[relation]) {
+                    where[relation] = {};
                 }
-            }
+
+                if (op === '$ilike') {
+                    where[relation][fieldName] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    where[relation][fieldName] = filterValue;
+                }
+            } else{
+                if (op === '$ilike') {
+                    where[field] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    if (field === 'fecha') {
+                        const date = String(filterValue);
+                        const newDate = new Date(date);
+                        if (date.toString() !== 'Invalid Date') {
+                            // Ajuste para comparar solo la parte de la fecha
+                            const startOfDay = new Date(newDate.setUTCHours(0, 0, 0, 0));
+                            const endOfDay = new Date(newDate.setUTCHours(23, 59, 59, 999));
+                            where[field] = {
+                                gte: startOfDay,
+                                lte: endOfDay
+                            };
+                        }
+                    } else {
+                        where[field] = Number(filterValue);
+                    }
+                }
+            }     
         }
     }
 
@@ -80,6 +97,9 @@ export const getallProductoInventarios = async (req: Request, res: Response): Pr
             where,
             orderBy: {
                 created_at: 'desc'
+            },include: {
+                alojamientos: true,
+                productos: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
@@ -116,7 +136,7 @@ export const getallProductoInventariosById = async (req: Request, res: Response)
 
 export const updateProductoInventario = async (req: Request, res: Response): Promise<void> => {
     const productoInvenId = parseInt(req.params.id)
-    const { cantidad, entrada, salida, stock, fecha, hora, productoId, alojamientoId } = req.body;
+    const { cantidad, entrada, salida, stock, fecha, productoId, alojamientoId } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (cantidad) {
@@ -133,9 +153,6 @@ export const updateProductoInventario = async (req: Request, res: Response): Pro
         }
         if (fecha) {
             dataToUpdate.fecha = fecha
-        }
-        if (hora) {
-            dataToUpdate.hora = hora
         }
         if (productoId) {
             dataToUpdate.productoId = productoId
