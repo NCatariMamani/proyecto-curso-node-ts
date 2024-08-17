@@ -14,7 +14,9 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             res.status(404).json({message: 'El password es obligatorio'})
             return
         } 
-        const hashedPassword = await hashPasword(password)
+        const varnull: any = null;
+        const hashedPassword = await hashPasword(password);
+        const date = new Date().toISOString();
         const user = await prisma.create({
             data: {
                 email,password: hashedPassword
@@ -61,7 +63,10 @@ export const getallUsers = async (req: Request, res: Response): Promise<void> =>
         const users = await prisma.findMany({
             skip: skip,
             take: limit,
-            where
+            where,
+            orderBy: {
+                id: 'desc'
+            }
         });
         const totalRecords = await prisma.count({ where });
 
@@ -110,7 +115,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         if(email){
             dataToUpdate.email = email
         }
-
+        dataToUpdate.updated_at = new Date().toISOString()
         const user = await prisma.update({
             where: {
                 id: userId
