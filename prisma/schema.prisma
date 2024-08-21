@@ -158,7 +158,7 @@ model reservaciones {
   tiempo String
   compania String
   costoHabitacion Float
-  costoExtra Float
+  costoExtra Float?
   total Float
   ventas ventas[]
   habitacionId Int
