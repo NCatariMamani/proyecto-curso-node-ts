@@ -157,9 +157,9 @@ model reservaciones {
   horaSalida String?
   tiempo String
   compania String
-  costoHabitacion Float
-  costoExtra Float?
-  total Float
+  costoHabitacion String
+  costoExtra String?
+  total String
   ventas ventas[]
   habitacionId Int
   habitaciones habitaciones @relation(fields: [habitacionId], references: [id])
