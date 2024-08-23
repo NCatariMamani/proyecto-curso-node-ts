@@ -50,6 +50,7 @@ model alojamientos {
   inventarios inventarios[]
   productoCompras productoCompras[]
   productoInventarios productoInventarios[]
+  reservaciones reservaciones[]
   created_at DateTime
   updated_at DateTime?
 }
@@ -143,13 +144,11 @@ model reservaciones {
   nombre String
   paterno String
   materno String
-  edad Int
   ci Int
   extencion String
   nombreA String?
   paternoA String?
   maternoA String?
-  edadA Int?
   ciA Int?
   extencionA String?
   fecha DateTime
@@ -165,6 +164,8 @@ model reservaciones {
   habitaciones habitaciones @relation(fields: [habitacionId], references: [id])
   encargadoId Int
   encargados encargados @relation(fields: [encargadoId], references: [id])
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
   updated_at DateTime?
 }

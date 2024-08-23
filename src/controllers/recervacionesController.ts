@@ -5,7 +5,7 @@ import prisma from '../models/recervacion';
 
 export const createRecervacion = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { nombre, paterno, materno, edad, ci, extencion, nombreA, paternoA, maternoA, edadA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId } = req.body;
+        const { nombre, paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId} = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createRecervacion = async (req: Request, res: Response): Promise<vo
 
         const recervacion = await prisma.create({
             data: {
-                nombre , paterno, materno, edad, ci, extencion, nombreA, paternoA, maternoA, edadA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, created_at: new Date().toISOString(), updated_at: varnull
+                nombre , paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(recervacion)
@@ -101,7 +101,8 @@ export const getallRecervaciones = async (req: Request, res: Response): Promise<
             },include: {
                 ventas: true,
                 habitaciones: true,
-                encargados: true // Incluye los detalles del alojamiento
+                encargados: true,
+                alojamientos: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });

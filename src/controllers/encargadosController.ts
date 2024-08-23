@@ -102,7 +102,8 @@ export const getallEncargados = async (req: Request, res: Response): Promise<voi
             },
             include: {
                 alojamiento: true,
-                user: true // Incluye los detalles del alojamiento
+                user: true,
+                reservaciones: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
