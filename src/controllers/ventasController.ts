@@ -80,6 +80,8 @@ export const getallVentas = async (req: Request, res: Response): Promise<void> =
             where,
             orderBy: {
                 created_at: 'desc'
+            }, include: {
+                reservaciones: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
