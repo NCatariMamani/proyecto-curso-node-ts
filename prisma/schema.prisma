@@ -106,9 +106,9 @@ model inventarios {
 model productos {
   id    Int     @id @default(autoincrement())
   nombre String
-  precio Float
+  precio String
   productoCompras productoCompras[]
-  productoInventarios productoInventarios[] 
+  productoInventarios productoInventarios[]
   productoVentas productoVentas[]
   created_at DateTime
   updated_at DateTime?
