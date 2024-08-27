@@ -5,7 +5,7 @@ import prisma from '../models/productoInventario';
 
 export const createProductoInventario = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { cantidad, entrada, salida, stock, fecha, productoId, alojamientoId } = req.body;
+        const { cantidad, entrada, salida, stock, fecha, productoId, inventarioId } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createProductoInventario = async (req: Request, res: Response): Pro
 
         const producto = await prisma.create({
             data: {
-                cantidad, entrada, salida, stock, fecha, productoId, alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
+                cantidad, entrada, salida, stock, fecha, productoId, inventarioId, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(producto)
@@ -98,7 +98,7 @@ export const getallProductoInventarios = async (req: Request, res: Response): Pr
             orderBy: {
                 created_at: 'desc'
             },include: {
-                alojamientos: true,
+                inventarios: true,
                 productos: true // Incluye los detalles del alojamiento
             }
         });
@@ -136,7 +136,7 @@ export const getallProductoInventariosById = async (req: Request, res: Response)
 
 export const updateProductoInventario = async (req: Request, res: Response): Promise<void> => {
     const productoInvenId = parseInt(req.params.id)
-    const { cantidad, entrada, salida, stock, fecha, productoId, alojamientoId } = req.body;
+    const { cantidad, entrada, salida, stock, fecha, productoId, inventarioId } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (cantidad) {
@@ -157,8 +157,8 @@ export const updateProductoInventario = async (req: Request, res: Response): Pro
         if (productoId) {
             dataToUpdate.productoId = productoId
         }
-        if (alojamientoId) {
-            dataToUpdate.alojamientoId = alojamientoId
+        if (inventarioId) {
+            dataToUpdate.inventarioId = inventarioId
         }
         dataToUpdate.updated_at = new Date().toISOString()
 

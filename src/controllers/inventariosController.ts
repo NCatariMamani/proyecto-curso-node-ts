@@ -17,12 +17,12 @@ export const createInventario = async (req: Request, res: Response): Promise<voi
         //const hashedPassword = await hashPasword(password)
         const varnull:any = null
 
-        const inventario = await prisma.create({
+        const inventarios = await prisma.create({
             data: {
                 descripcion, fecha, alojamientoId,  created_at: new Date().toISOString(), updated_at: varnull
             }
         })
-        res.status(201).json(inventario)
+        res.status(201).json(inventarios)
 
     } catch (error: any) {
         if(error?.code === 'P2003' ){
@@ -93,21 +93,21 @@ export const getallInventarios = async (req: Request, res: Response): Promise<vo
     }
 
     try {
-        const inventarios = await prisma.findMany({
+        const inventario = await prisma.findMany({
             skip: skip,
             take: limit,
             where,
             orderBy: {
                 created_at: 'desc'
             }, include: {
-                alojamientos: true // Incluye los detalles del alojamiento
+                alojamientos: true// Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
         res.status(200).json({
             statusCode: 200,
             message: "Registros encontrados",
-            data: inventarios,
+            data: inventario,
             count: totalRecords
         })
     } catch (error: any) {
@@ -117,11 +117,11 @@ export const getallInventarios = async (req: Request, res: Response): Promise<vo
 }
 
 export const getallInventariosById = async (req: Request, res: Response): Promise<void> => {
-    const inventarioId = parseInt(req.params.id)
+    const invenId = parseInt(req.params.id)
     try {
         const inventario = await prisma.findUnique({
             where: {
-                id: inventarioId
+                id: invenId
             }
         })
         if (!inventario) {
@@ -136,7 +136,7 @@ export const getallInventariosById = async (req: Request, res: Response): Promis
 }
 
 export const updateInventario = async (req: Request, res: Response): Promise<void> => {
-    const inventarioId = parseInt(req.params.id)
+    const invenId = parseInt(req.params.id)
     const { descripcion, fecha, alojamientoId } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
@@ -153,7 +153,7 @@ export const updateInventario = async (req: Request, res: Response): Promise<voi
 
         const inventario = await prisma.update({
             where: {
-                id: inventarioId
+                id: invenId
             }, data: dataToUpdate
         })
         res.status(200).json(inventario)
@@ -174,15 +174,15 @@ export const updateInventario = async (req: Request, res: Response): Promise<voi
 }
 
 export const deleteInventario = async (req: Request, res: Response): Promise<void> => {
-    const inventarioId = parseInt(req.params.id)
+    const invenId = parseInt(req.params.id)
     try {
         await prisma.delete({
             where: {
-                id: inventarioId
+                id: invenId
             }
         })
         res.status(200).json({
-            message: `El usuario ${inventarioId} ha sido eliminado`
+            message: `El usuario ${invenId} ha sido eliminado`
         }).end()
     } catch (error: any) {
         if (error?.code === 'P2025') {
