@@ -48,14 +48,47 @@ export const getallProductoVentas = async (req: Request, res: Response): Promise
             const value = req.query[key] as string;
             const [op, filterValue] = value.split(':');
 
-            if (op === '$ilike') {
-                where[field] = {
-                    contains: filterValue,
-                    mode: 'insensitive' // Para búsqueda case-insensitive
-                };
-            }else if (op === '$eq') {
-                where[field] = Number(filterValue);
+            if (field.includes('.')) {
+                const [relation, fieldName] = field.split('.');
+
+                if (!where[relation]) {
+                    where[relation] = {};
+                }
+
+                if (op === '$ilike') {
+                    where[relation][fieldName] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    where[relation][fieldName] = filterValue;
+                }
+            } else{
+                if (op === '$ilike') {
+                    where[field] = {
+                        contains: filterValue,
+                        mode: 'insensitive' // Para búsqueda case-insensitive
+                    };
+                } else if (op === '$eq') {
+                    if (field === 'fecha') {
+                        const date = String(filterValue);
+                        const newDate = new Date(date);
+                        if (date.toString() !== 'Invalid Date') {
+                            // Ajuste para comparar solo la parte de la fecha
+                            const startOfDay = new Date(newDate.setUTCHours(0, 0, 0, 0));
+                            const endOfDay = new Date(newDate.setUTCHours(23, 59, 59, 999));
+                            where[field] = {
+                                gte: startOfDay,
+                                lte: endOfDay
+                            };
+                        }
+                    } else {
+                        where[field] = Number(filterValue);
+                    }
+                }
             }
+
+            
         }
     }
 
@@ -66,7 +99,10 @@ export const getallProductoVentas = async (req: Request, res: Response): Promise
             where,
             orderBy: {
                 created_at: 'desc'
-            }
+            }, include: {
+                ventas: true,
+                productos: true // Incluye los detalles del alojamiento
+            }  
         });
         const totalRecords = await prisma.count({ where });
         res.status(200).json({
