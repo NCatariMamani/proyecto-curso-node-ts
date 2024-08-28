@@ -107,6 +107,7 @@ model productos {
   id    Int     @id @default(autoincrement())
   nombre String
   precio String
+  estado String
   productoCompras productoCompras[]
   productoInventarios productoInventarios[]
   productoVentas productoVentas[]
