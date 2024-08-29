@@ -5,7 +5,7 @@ import prisma from '../models/alojamiento';
 
 export const createAloja = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { nombre, direccion, noHabitaciones } = req.body;
+        const { nombre, direccion, noHabitaciones, departamento } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createAloja = async (req: Request, res: Response): Promise<void> =>
 
         const aloja = await prisma.create({
             data: {
-                nombre, direccion, noHabitaciones, created_at: new Date().toISOString(), updated_at: varnull
+                nombre, direccion, noHabitaciones,departamento ,created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(aloja)
@@ -73,6 +73,12 @@ export const getallAlojas = async (req: Request, res: Response): Promise<void> =
             where,
             orderBy: {
                 created_at: 'desc'
+            },include: {
+                compras: true,
+                encargados: true,
+                habitaciones: true,
+                inventarios: true,
+                reservaciones: true// Incluye los detalles del alojamiento
             }
         })
 
@@ -114,7 +120,7 @@ export const getallAlojasById = async (req: Request, res: Response): Promise<voi
 
 export const updateAloja = async (req: Request, res: Response): Promise<void> => {
     const alojaId = parseInt(req.params.id)
-    const { nombre, direccion, noHabitaciones } = req.body
+    const { nombre, direccion, noHabitaciones, departamento } = req.body
     try {
         let dataToUpdate: any = { ...req.body }
         if (nombre) {
@@ -125,6 +131,9 @@ export const updateAloja = async (req: Request, res: Response): Promise<void> =>
         }
         if (noHabitaciones) {
             dataToUpdate.noHabitaciones = noHabitaciones
+        }
+        if (departamento) {
+            dataToUpdate.departamento = departamento
         }
 
         dataToUpdate.updated_at = new Date().toISOString()

@@ -14,6 +14,10 @@ import productoInventarios from './routes/productoInventariosRoutes';
 import recervaciones from './routes/recervacionesRoutes';
 import ventas from './routes/ventasRoutes';
 import productoVentas from './routes/productoVentasRoutes';
+
+import entradas from './routes/entradasRoutes';
+import salidas from './routes/salidasRoutes';
+
 const cors = require('cors');
 const app = express();
 
@@ -36,7 +40,8 @@ app.use('/catalog/productoInventarios', productoInventarios)
 app.use('/catalog/recervaciones', recervaciones)
 app.use('/catalog/ventas', ventas)
 app.use('/catalog/productoVentas', productoVentas)
-
+app.use('/catalog/entradas', entradas)
+app.use('/catalog/salidas', salidas)
 
 
 //Hacer una api rest de usuarios
