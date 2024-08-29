@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
-import prisma from '../models/productoInventario';
+import prisma from '../models/entrada';
 
 
-export const createProductoInventario = async (req: Request, res: Response): Promise<void> => {
+export const createEntrada = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { cantidad, entrada, salida, stock, fecha, productoId, inventarioId } = req.body;
+        const { descripcion,cantidad, fecha,productoInventarioId} = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -17,12 +17,12 @@ export const createProductoInventario = async (req: Request, res: Response): Pro
         //const hashedPassword = await hashPasword(password)
         const varnull:any = null
 
-        const producto = await prisma.create({
+        const entrada = await prisma.create({
             data: {
-                cantidad, entrada, salida, stock, fecha, productoId, inventarioId, created_at: new Date().toISOString(), updated_at: varnull
+                descripcion,cantidad,fecha,productoInventarioId, created_at: new Date().toISOString(), updated_at: varnull 
             }
         })
-        res.status(201).json(producto)
+        res.status(201).json(entrada)
 
     } catch (error: any) {
         /*if(error?.code === 'P2002' && error?.meta?.target?.includes('email')){
@@ -34,7 +34,7 @@ export const createProductoInventario = async (req: Request, res: Response): Pro
     }
 }
 
-export const getallProductoInventarios = async (req: Request, res: Response): Promise<void> => {
+export const getallEntrada = async (req: Request, res: Response): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -86,29 +86,29 @@ export const getallProductoInventarios = async (req: Request, res: Response): Pr
                         where[field] = Number(filterValue);
                     }
                 }
-            }     
+            }
+
+            
         }
     }
 
     try {
-        const productos = await prisma.findMany({
+        const entrada = await prisma.findMany({
             skip: skip,
             take: limit,
             where,
             orderBy: {
                 created_at: 'desc'
-            },include: {
-                inventarios: true,
-                productos: true,
-                entradas: true,
-                salidas: true // Incluye los detalles del alojamiento
+            },
+            include: {
+                productoInventarios: true// Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
         res.status(200).json({
             statusCode: 200,
             message: "Registros encontrados",
-            data: productos,
+            data: entrada,
             count: totalRecords
         })
     } catch (error: any) {
@@ -117,59 +117,52 @@ export const getallProductoInventarios = async (req: Request, res: Response): Pr
     }
 }
 
-export const getallProductoInventariosById = async (req: Request, res: Response): Promise<void> => {
-    const productoInvenId = parseInt(req.params.id)
+export const getallEntradaById = async (req: Request, res: Response): Promise<void> => {
+    const entradaId = parseInt(req.params.id)
     try {
-        const productoInven = await prisma.findUnique({
+        const entrada = await prisma.findUnique({
             where: {
-                id: productoInvenId
+                id: entradaId
             }
         })
-        if (!productoInven) {
+        if (!entrada) {
             res.status(404).json({ error: 'El alojamiento no fue encontrado' })
             return
         }
-        res.status(200).json(productoInven)
+        res.status(200).json(entrada)
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
 
-export const updateProductoInventario = async (req: Request, res: Response): Promise<void> => {
-    const productoInvenId = parseInt(req.params.id)
-    const { cantidad, entrada, salida, stock, fecha, productoId, inventarioId } = req.body;
+export const updateEntrada = async (req: Request, res: Response): Promise<void> => {
+    const entradaId = parseInt(req.params.id)
+    const { descripcion,cantidad, fecha,productoInventarioId} = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
+        if (descripcion) {
+            dataToUpdate.descripcion = descripcion
+        }
         if (cantidad) {
             dataToUpdate.cantidad = cantidad
-        }
-        if (entrada) {
-            dataToUpdate.entrada = entrada
-        }
-        if (salida) {
-            dataToUpdate.salida = salida
-        }
-        if (stock) {
-            dataToUpdate.stock = stock
         }
         if (fecha) {
             dataToUpdate.fecha = fecha
         }
-        if (productoId) {
-            dataToUpdate.productoId = productoId
+        if (productoInventarioId) {
+            dataToUpdate.productoInventarioId = productoInventarioId
         }
-        if (inventarioId) {
-            dataToUpdate.inventarioId = inventarioId
-        }
+        
+
         dataToUpdate.updated_at = new Date().toISOString()
 
-        const productoInven = await prisma.update({
+        const entrada = await prisma.update({
             where: {
-                id: productoInvenId
+                id: entradaId
             }, data: dataToUpdate
         })
-        res.status(200).json(productoInven)
+        res.status(200).json(entrada)
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Alojamiento no encontrado' })
@@ -183,16 +176,16 @@ export const updateProductoInventario = async (req: Request, res: Response): Pro
     }
 }
 
-export const deleteProductoInventario = async (req: Request, res: Response): Promise<void> => {
-    const productoInvenId = parseInt(req.params.id)
+export const deleteEntrada = async (req: Request, res: Response): Promise<void> => {
+    const entradaId = parseInt(req.params.id)
     try {
         await prisma.delete({
             where: {
-                id: productoInvenId
+                id: entradaId
             }
         })
         res.status(200).json({
-            message: `El usuario ${productoInvenId} ha sido eliminado`
+            message: `El usuario ${entradaId} ha sido eliminado`
         }).end()
     } catch (error: any) {
         if (error?.code === 'P2025') {

@@ -100,7 +100,8 @@ export const getallInventarios = async (req: Request, res: Response): Promise<vo
             orderBy: {
                 created_at: 'desc'
             }, include: {
-                alojamientos: true// Incluye los detalles del alojamiento
+                alojamientos: true,
+                productoInventarios: true// Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });

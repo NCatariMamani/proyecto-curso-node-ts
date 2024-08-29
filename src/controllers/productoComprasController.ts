@@ -5,7 +5,7 @@ import prisma from '../models/productoCompra';
 
 export const createProductoCompra = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { productoId, alojamientoId } = req.body;
+        const { precioCompra, productoId, compraId } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createProductoCompra = async (req: Request, res: Response): Promise
 
         const productoCompra = await prisma.create({
             data: {
-                productoId ,alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
+                precioCompra, productoId ,compraId, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(productoCompra)
@@ -98,7 +98,7 @@ export const getallProductoCompras = async (req: Request, res: Response): Promis
             orderBy: {
                 created_at: 'desc'
             },include: {
-                alojamientos: true,
+                compras: true,
                 productos: true // Incluye los detalles del alojamiento
             }
         });
@@ -137,7 +137,7 @@ export const getallProductoCompraById = async (req: Request, res: Response): Pro
 
 export const updateProductoCompra = async (req: Request, res: Response): Promise<void> => {
     const productoCompraId = parseInt(req.params.id)
-    const { nombre, precio } = req.body;
+    const { nombre, precio,precioCompra } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (nombre) {
@@ -145,6 +145,9 @@ export const updateProductoCompra = async (req: Request, res: Response): Promise
         }
         if (precio) {
             dataToUpdate.precio = precio
+        }
+        if (precioCompra) {
+            dataToUpdate.precioCompra = precioCompra
         }
         dataToUpdate.updated_at = new Date().toISOString()
 
