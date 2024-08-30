@@ -3,7 +3,7 @@ import { hashPasword } from '../services/password.service';
 import prisma from '../models/salida';
 
 
-export const createEntrada = async (req: Request, res: Response): Promise<void> => {
+export const createSalida = async (req: Request, res: Response): Promise<void> => {
     try {
         const { descripcion,cantidad, fecha,productoInventarioId} = req.body;
         /*if(!email) {
@@ -34,7 +34,7 @@ export const createEntrada = async (req: Request, res: Response): Promise<void> 
     }
 }
 
-export const getallEntrada = async (req: Request, res: Response): Promise<void> => {
+export const getallSalida = async (req: Request, res: Response): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -93,7 +93,7 @@ export const getallEntrada = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-        const entrada = await prisma.findMany({
+        const salida = await prisma.findMany({
             skip: skip,
             take: limit,
             where,
@@ -108,7 +108,7 @@ export const getallEntrada = async (req: Request, res: Response): Promise<void> 
         res.status(200).json({
             statusCode: 200,
             message: "Registros encontrados",
-            data: entrada,
+            data: salida,
             count: totalRecords
         })
     } catch (error: any) {
@@ -117,7 +117,7 @@ export const getallEntrada = async (req: Request, res: Response): Promise<void> 
     }
 }
 
-export const getallEntradaById = async (req: Request, res: Response): Promise<void> => {
+export const getallSalidaById = async (req: Request, res: Response): Promise<void> => {
     const salidaId = parseInt(req.params.id)
     try {
         const salida = await prisma.findUnique({
@@ -136,7 +136,7 @@ export const getallEntradaById = async (req: Request, res: Response): Promise<vo
     }
 }
 
-export const updateEntrada = async (req: Request, res: Response): Promise<void> => {
+export const updateSalida = async (req: Request, res: Response): Promise<void> => {
     const salidaId = parseInt(req.params.id)
     const { descripcion,cantidad, fecha,productoInventarioId} = req.body;
     try {
@@ -176,7 +176,7 @@ export const updateEntrada = async (req: Request, res: Response): Promise<void> 
     }
 }
 
-export const deleteEntrada = async (req: Request, res: Response): Promise<void> => {
+export const deleteSalida = async (req: Request, res: Response): Promise<void> => {
     const salidaId = parseInt(req.params.id)
     try {
         await prisma.delete({
