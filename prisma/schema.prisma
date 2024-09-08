@@ -165,9 +165,9 @@ model reservaciones {
   costoHabitacion String
   costoExtra String?
   total String
-  totalVenta String
-  cambio String
-  estadoCambio String
+  totalVenta String?
+  cambio String?
+  estadoCambio String?
   ventas ventas[]
   habitacionId Int
   habitaciones habitaciones @relation(fields: [habitacionId], references: [id])
