@@ -161,6 +161,7 @@ model reservaciones {
   horaEntrada String
   horaSalida String?
   tiempo String
+  montoEntregado String
   compania String
   costoHabitacion String
   costoExtra String?
