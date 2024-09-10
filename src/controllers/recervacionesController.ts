@@ -5,7 +5,7 @@ import prisma from '../models/recervacion';
 
 export const createRecervacion = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { nombre, paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta ,cambio ,estadoCambio } = req.body;
+        const { nombre, paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta ,cambio ,estadoCambio,montoEntregado } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createRecervacion = async (req: Request, res: Response): Promise<vo
 
         const recervacion = await prisma.create({
             data: {
-                nombre , paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta, cambio,estadoCambio ,created_at: new Date().toISOString(), updated_at: varnull
+                nombre , paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta, cambio,estadoCambio,montoEntregado ,created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(recervacion)
@@ -139,7 +139,7 @@ export const getallRecervacionById = async (req: Request, res: Response): Promis
 
 export const updateRecervacion = async (req: Request, res: Response): Promise<void> => {
     const recervacionId = parseInt(req.params.id)
-    const { nombre, paterno, materno, edad, ci, extencion, nombreA, paternoA, maternoA, edadA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,totalVenta,cambio,estadoCambio } = req.body;
+    const { nombre, paterno, materno, edad, ci, extencion, nombreA, paternoA, maternoA, edadA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,totalVenta,cambio,estadoCambio,montoEntregado } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (nombre) {
@@ -216,6 +216,9 @@ export const updateRecervacion = async (req: Request, res: Response): Promise<vo
         }
         if (estadoCambio) {
             dataToUpdate.estadoCambio = estadoCambio
+        }
+        if(montoEntregado){
+            dataToUpdate.montoEntregado = montoEntregado
         }
         dataToUpdate.updated_at = new Date().toISOString()
 
