@@ -6,15 +6,6 @@ import prisma from '../models/alojamiento';
 export const createAloja = async (req: Request, res: Response): Promise<void> => {
     try {
         const { nombre, direccion, noHabitaciones, departamento } = req.body;
-        /*if(!email) {
-            res.status(404).json({message: 'El email es obligatorio'})
-            return
-         }
-         if(!password){
-            res.status(404).json({message: 'El password es obligatorio'})
-            return
-        } */
-        //const hashedPassword = await hashPasword(password)
         const varnull: any = null
 
         const aloja = await prisma.create({
@@ -90,7 +81,7 @@ export const getallAlojas = async (req: Request, res: Response): Promise<void> =
             count: totalRecords
         })
     } catch (error: any) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
@@ -113,7 +104,7 @@ export const getallAlojasById = async (req: Request, res: Response): Promise<voi
             data: aloja
         })
     } catch (error: any) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
