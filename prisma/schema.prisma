@@ -45,6 +45,7 @@ model alojamientos {
   noHabitaciones Int
   direccion String
   departamento String
+  clientes clientes[]
   compras compras[]
   encargados encargados[]
   habitaciones habitaciones[]
@@ -223,6 +224,17 @@ model salidas {
   updated_at DateTime?
 }
 
-
+model clientes {
+  id    Int     @id @default(autoincrement())
+  nombre String
+  paterno String
+  materno String
+  ci Int
+  extencion String
+  alojamientoId Int
+  alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  created_at DateTime
+  updated_at DateTime?
+}
 
 
