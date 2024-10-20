@@ -14,6 +14,7 @@ import productoInventarios from './routes/productoInventariosRoutes';
 import recervaciones from './routes/recervacionesRoutes';
 import ventas from './routes/ventasRoutes';
 import productoVentas from './routes/productoVentasRoutes';
+import clientes from './routes/clientesRoutes';
 
 import entradas from './routes/entradasRoutes';
 import salidas from './routes/salidasRoutes';
@@ -42,7 +43,7 @@ app.use('/catalog/ventas', ventas)
 app.use('/catalog/productoVentas', productoVentas)
 app.use('/catalog/entradas', entradas)
 app.use('/catalog/salidas', salidas)
-
+app.use('/catalog/clientes', clientes)
 
 //Hacer una api rest de usuarios
 
