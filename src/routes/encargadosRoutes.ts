@@ -1,6 +1,6 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createEncargado, deleteEncargado, getallEncargados, getallEncargadosById, updateEncargado } from '../controllers/encargadosController';
+import { createEncargado, deleteEncargado, getallEncargados, getallEncargadosById, updateEncargado,getByIdEncargadoUser } from '../controllers/encargadosController';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
@@ -28,6 +28,6 @@ router.get('/', authenticateToken,  getallEncargados)
 router.get('/:id', authenticateToken,  getallEncargadosById)
 router.put('/:id', authenticateToken,  updateEncargado)
 router.delete('/:id', authenticateToken,  deleteEncargado)
-
+router.get('/getByEncargadoUser/:id', authenticateToken,  getByIdEncargadoUser)
 
 export default router;

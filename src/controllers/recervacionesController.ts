@@ -5,7 +5,7 @@ import prisma from '../models/recervacion';
 
 export const createRecervacion = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { nombre, paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta ,cambio ,estadoCambio,montoEntregado } = req.body;
+        const { clienteId,fecha, horaEntrada, horaSalida,horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta ,cambio ,estadoCambio,montoEntregado } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +19,7 @@ export const createRecervacion = async (req: Request, res: Response): Promise<vo
 
         const recervacion = await prisma.create({
             data: {
-                nombre , paterno, materno, ci, extencion, nombreA, paternoA, maternoA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta, cambio,estadoCambio,montoEntregado ,created_at: new Date().toISOString(), updated_at: varnull
+                fecha, horaEntrada, horaSalida,horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,alojamientoId,totalVenta, cambio,estadoCambio,montoEntregado,clienteId ,created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(recervacion)
@@ -102,7 +102,8 @@ export const getallRecervaciones = async (req: Request, res: Response): Promise<
                 ventas: true,
                 habitaciones: true,
                 encargados: true,
-                alojamientos: true // Incluye los detalles del alojamiento
+                alojamientos: true,
+                clientes:true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
@@ -139,45 +140,9 @@ export const getallRecervacionById = async (req: Request, res: Response): Promis
 
 export const updateRecervacion = async (req: Request, res: Response): Promise<void> => {
     const recervacionId = parseInt(req.params.id)
-    const { nombre, paterno, materno, edad, ci, extencion, nombreA, paternoA, maternoA, edadA, ciA, extencionA, fecha, horaEntrada, horaSalida, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,totalVenta,cambio,estadoCambio,montoEntregado } = req.body;
+    const { clienteId, fecha, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId,totalVenta,cambio,estadoCambio,montoEntregado } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
-        if (nombre) {
-            dataToUpdate.nombre = nombre
-        }
-        if (paterno) {
-            dataToUpdate.paterno = paterno
-        }
-        if (materno) {
-            dataToUpdate.materno = materno
-        }
-        if (edad) {
-            dataToUpdate.edad = edad
-        }
-        if (ci) {
-            dataToUpdate.ci = ci
-        }
-        if (extencion) {
-            dataToUpdate.extencion = extencion
-        }
-        if (nombreA) {
-            dataToUpdate.nombreA = nombreA
-        }
-        if (paternoA) {
-            dataToUpdate.paternoA = paternoA
-        }
-        if (maternoA) {
-            dataToUpdate.maternoA = maternoA
-        }
-        if (edadA) {
-            dataToUpdate.edadA = edadA
-        }
-        if (ciA) {
-            dataToUpdate.ciA = ciA
-        }
-        if (extencionA) {
-            dataToUpdate.extencionA = extencionA
-        }
         if (fecha) {
             dataToUpdate.fecha = fecha
         }
@@ -186,6 +151,9 @@ export const updateRecervacion = async (req: Request, res: Response): Promise<vo
         }
         if (horaSalida) {
             dataToUpdate.horaSalida = horaSalida
+        }
+        if (horaProgramada) {
+            dataToUpdate.horaSalida = horaProgramada
         }
         if (tiempo) {
             dataToUpdate.tiempo = tiempo
@@ -207,6 +175,9 @@ export const updateRecervacion = async (req: Request, res: Response): Promise<vo
         }
         if (encargadoId) {
             dataToUpdate.encargadoId = encargadoId
+        }
+        if (clienteId) {
+            dataToUpdate.clienteId = clienteId
         }
         if (totalVenta) {
             dataToUpdate.totalVenta = totalVenta

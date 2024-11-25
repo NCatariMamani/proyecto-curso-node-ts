@@ -211,3 +211,73 @@ export const deleteCliente = async (req: Request, res: Response): Promise<void> 
         }
     }
 }
+
+
+export const getByIdAlojaClientes = async (req: Request, res: Response): Promise<void> => {
+    const alojaId = parseInt(req.params.id)
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    //let where: { [key: string]: any } = {};
+
+    let where: { [key: string]: any } = {
+        alojamientos: {
+            id: alojaId,
+        },
+    };
+
+    // Manejar el parámetro de filtro
+    for (const key in req.query) {
+        if (key.startsWith('filter.')) {
+            const field = key.replace('filter.', '');
+            const value = req.query[key] as string;
+            const [op, filterValue] = value.split(':');
+            if (op === '$ilike') {
+                where[field] = {
+                    contains: filterValue,
+                    mode: 'insensitive' // Para búsqueda case-insensitive
+                };
+            } else if (op === '$eq') {
+                where[field] = Number(filterValue);
+            }
+        }
+    }
+
+
+    try {
+
+        const encargado = await prisma.findMany({
+            select: {
+                id: true,
+                nombre: true,
+                paterno: true,
+                materno: true,
+                ci: true,
+                extencion: true,
+            },
+            where: where,
+            orderBy: {
+                id: 'asc',  // Ordenar por el número de la habitación
+            },
+        });
+
+        const totalRecords = await prisma.count({ where });
+
+        console.log(totalRecords);
+
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: encargado,
+            count: totalRecords
+        })
+        if (!encargado) {
+            res.status(404).json({ error: 'El alojamiento no fue encontrado' })
+            return
+        }
+    } catch (error: any) {
+        console.log(error);
+        res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
+    }
+}

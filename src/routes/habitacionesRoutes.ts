@@ -1,6 +1,6 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createHabitacion, deleteHabitacion, getallHabitaciones, getallHabitacionesById, updateHabitacion } from '../controllers/habitacionesController';
+import { createHabitacion, deleteHabitacion, getallHabitaciones, getallHabitacionesById, updateHabitacion,getAllHabitacionUser } from '../controllers/habitacionesController';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
@@ -28,6 +28,6 @@ router.get('/', authenticateToken,  getallHabitaciones)
 router.get('/:id', authenticateToken,  getallHabitacionesById)
 router.put('/:id', authenticateToken,  updateHabitacion)
 router.delete('/:id', authenticateToken,  deleteHabitacion)
-
+router.get('/getAllHabUser/:id', authenticateToken,  getAllHabitacionUser)
 
 export default router;
