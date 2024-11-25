@@ -148,19 +148,10 @@ model productoInventarios {
 
 model reservaciones {
   id    Int     @id @default(autoincrement())
-  nombre String
-  paterno String
-  materno String
-  ci Int
-  extencion String
-  nombreA String?
-  paternoA String?
-  maternoA String?
-  ciA Int?
-  extencionA String?
   fecha DateTime
   horaEntrada String
   horaSalida String?
+  horaProgramada String
   tiempo String
   montoEntregado String
   compania String
@@ -177,6 +168,8 @@ model reservaciones {
   encargados encargados @relation(fields: [encargadoId], references: [id])
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
+  clienteId Int
+  clientes clientes @relation(fields: [clienteId], references: [id])
   created_at DateTime
   updated_at DateTime?
 }
@@ -231,6 +224,7 @@ model clientes {
   materno String
   ci Int
   extencion String
+  reservaciones reservaciones[]
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
   created_at DateTime
