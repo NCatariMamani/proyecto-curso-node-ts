@@ -15,7 +15,7 @@ export const createVenta = async (req: Request, res: Response): Promise<void> =>
             return
         } */
         //const hashedPassword = await hashPasword(password)
-        const varnull:any = null
+        const varnull: any = null
 
         const venta = await prisma.create({
             data: {
@@ -53,7 +53,7 @@ export const getallVentas = async (req: Request, res: Response): Promise<void> =
                     contains: filterValue,
                     mode: 'insensitive' // Para búsqueda case-insensitive
                 };
-            }else if (op === '$eq') {
+            } else if (op === '$eq') {
                 if (field === 'fecha') {
                     const date = String(filterValue);
                     const newDate = new Date(date);
@@ -81,7 +81,8 @@ export const getallVentas = async (req: Request, res: Response): Promise<void> =
             orderBy: {
                 created_at: 'desc'
             }, include: {
-                reservaciones: true // Incluye los detalles del alojamiento
+                reservaciones: true,
+                productoVentas: true // Incluye los detalles del alojamiento
             }
         });
         const totalRecords = await prisma.count({ where });
@@ -91,7 +92,7 @@ export const getallVentas = async (req: Request, res: Response): Promise<void> =
             data: ventas,
             count: totalRecords
         });
-        
+
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
@@ -164,7 +165,7 @@ export const deleteVenta = async (req: Request, res: Response): Promise<void> =>
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
             return
-        } else if(error?.code === 'P2003'){
+        } else if (error?.code === 'P2003') {
             res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
             return
         } else {
@@ -172,5 +173,84 @@ export const deleteVenta = async (req: Request, res: Response): Promise<void> =>
             res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
             return
         }
+    }
+}
+
+export const getAllVentaByIdClient = async (req: Request, res: Response): Promise<void> => {
+    const reserId = parseInt(req.params.id)
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    //let where: { [key: string]: any } = {};
+
+    let where: { [key: string]: any } = {
+        reservaciones: {
+            id: reserId,
+        },
+    };
+
+    // Manejar el parámetro de filtro
+    for (const key in req.query) {
+        if (key.startsWith('filter.')) {
+            const field = key.replace('filter.', '');
+            const value = req.query[key] as string;
+            const [op, filterValue] = value.split(':');
+            if (op === '$ilike') {
+                where[field] = {
+                    contains: filterValue,
+                    mode: 'insensitive' // Para búsqueda case-insensitive
+                };
+            } else if (op === '$eq') {
+                where[field] = Number(filterValue);
+            }
+        }
+    }
+
+
+    try {
+
+        const ventas = await prisma.findMany({
+            skip: skip,
+            take: limit,
+            select: {
+                id: true,
+                reservaciones: {
+                    select: {
+                        fecha: true,
+                        clientes: {
+                            select: {
+                                nombre: true,
+                                paterno: true,
+                                materno: true,
+                            },
+                        },
+                    },
+                },
+            },
+            where: where,
+        });
+
+        const transformed = ventas.map(item => ({
+            id: item.id,
+            reservaciones: `${item.reservaciones.clientes.nombre} ${item.reservaciones.clientes.paterno} ${item.reservaciones.clientes.materno}`,
+            fecha: item.reservaciones.fecha,
+        }));
+
+        const totalRecords = await prisma.count({ where });
+
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: transformed,
+            count: totalRecords
+        })
+        if (!ventas) {
+            res.status(404).json({ error: 'El alojamiento no fue encontrado' })
+            return
+        }
+    } catch (error: any) {
+        console.log(error);
+        res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }

@@ -186,7 +186,9 @@ model ventas {
 
 model productoVentas {
   id    Int     @id @default(autoincrement())
-  precioVenta String
+  precioUni String
+  cantidad Int
+  precioTotal String
   productoId Int
   productos productos @relation(fields: [productoId], references: [id])
   ventaId Int
