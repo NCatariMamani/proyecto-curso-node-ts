@@ -17,7 +17,8 @@
     "@types/node": "^20.12.4",
     "prisma": "^5.12.1",
     "rimraf": "^5.0.5",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.4"
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",
@@ -25,7 +26,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "typescript": "^5.4.4"
+    "jsonwebtoken": "^9.0.2"
   }
 }
