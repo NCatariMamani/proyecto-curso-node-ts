@@ -19,13 +19,17 @@ import clientes from './routes/clientesRoutes';
 import entradas from './routes/entradasRoutes';
 import salidas from './routes/salidasRoutes';
 
+
 const cors = require('cors');
 const app = express();
+
 
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:4200'
 }));
+
+
 
 //Routes
 app.use('/auth', authRoutes)
@@ -50,4 +54,5 @@ app.use('/catalog/clientes', clientes)
 
 console.log("Esto esta siendo ejecutado");
  
+
 export default app
