@@ -2,7 +2,7 @@
   "name": "proyecto-node-jwt-ts",
   "version": "0.0.1",
   "description": "Proyecto de Node con TaypeScript donde usaremos como BD PosgrestSQL y para auntenticar JWT",
-  "main": "src/app.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsnd --respawn --clear src/server.ts",
     "build": "rimraf ./dist && tsc",
