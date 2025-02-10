@@ -27,7 +27,7 @@ const app = express();
 
 
 app.use(cors({
-    origin: ['http://localhost:4200', 'https://alojamiento-frontend.vercel.app'],
+    origin: 'https://alojamiento-frontend.vercel.app',
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'  // 🔥 Permitir Authorization
   }));
