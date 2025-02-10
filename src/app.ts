@@ -26,7 +26,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'https://alojamiento-frontend-kzf5mzg8y-nestors-projects-a8842b12.vercel.app'
+    origin: 'https://alojamiento-frontend.vercel.app'
 }));
 
 
