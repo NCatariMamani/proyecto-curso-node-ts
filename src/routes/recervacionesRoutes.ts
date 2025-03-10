@@ -1,6 +1,7 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createRecervacion, deleteRecervacion, getallRecervaciones, getallRecervacionById, updateRecervacion } from '../controllers/recervacionesController';
+import { createRecervacion, deleteRecervacion, getallRecervaciones, getallRecervacionById, updateRecervacion,generatePDF } from '../controllers/recervacionesController';
+
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
@@ -25,6 +26,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
 router.post('/', authenticateToken, createRecervacion)
 router.get('/', authenticateToken,  getallRecervaciones)
+router.post('/generatepdf', authenticateToken, generatePDF)
 router.get('/:id', authenticateToken,  getallRecervacionById)
 router.put('/:id', authenticateToken,  updateRecervacion)
 router.delete('/:id', authenticateToken,  deleteRecervacion)
