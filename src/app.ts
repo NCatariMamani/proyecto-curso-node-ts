@@ -18,7 +18,9 @@ import clientes from './routes/clientesRoutes';
 
 import entradas from './routes/entradasRoutes';
 import salidas from './routes/salidasRoutes';
-
+import roles from './routes/roleRoutes';
+import permissions from './routes/permissionRoutes';
+import rolePermissions from './routes/rolePermissionsRoutes';
 
 const cors = require('cors');
 const app = express();
@@ -28,6 +30,11 @@ app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:4200'
 }));
+
+/*app.use(cors({
+    origin: 'https://alojamiento-frontend.vercel.app',      
+}));*/
+
 
 
 
@@ -48,11 +55,13 @@ app.use('/catalog/productoVentas', productoVentas)
 app.use('/catalog/entradas', entradas)
 app.use('/catalog/salidas', salidas)
 app.use('/catalog/clientes', clientes)
-
+app.use('/catalog/role', roles)
+app.use('/catalog/permission', permissions)
+app.use('/catalog/rolePermissions', rolePermissions)
 //Hacer una api rest de usuarios
 
 
 console.log("Esto esta siendo ejecutado");
- 
+
 
 export default app

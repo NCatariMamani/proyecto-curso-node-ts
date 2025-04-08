@@ -229,6 +229,7 @@ export const getAllHabitacionUser = async (req: Request, res: Response): Promise
                 noHabitacion: true,
                 preferencias: true,
                 estado: true,
+                alojamientoId: true
             },
             where:where,
             orderBy: {

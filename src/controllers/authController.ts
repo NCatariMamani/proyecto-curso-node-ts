@@ -5,7 +5,7 @@ import { generateToken } from '../services/auth.service';
 
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+    const { email, password, roleId} = req.body;
 
     try {
         if(!email) {
@@ -19,7 +19,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         const hashedPassword = await hashPasword(password)
         console.log(hashedPassword)
         const users = await prisma.create({
-            data: { email, password: hashedPassword}
+            data: { email, password: hashedPassword, roleId: roleId}
         })
         const token = generateToken(users)
         res.status(200).json({token})

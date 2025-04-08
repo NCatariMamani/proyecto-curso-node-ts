@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
-import prisma from '../models/alojamiento';
+import prisma from '../models/permission';
 
 
-export const createAloja = async (req: Request, res: Response): Promise<void> => {
+export const createPermission = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { nombre, direccion, noHabitaciones, departamento } = req.body;
+        const { name } = req.body;
         const varnull: any = null
 
-        const aloja = await prisma.create({
+        const permission = await prisma.create({
             data: {
-                nombre, direccion, noHabitaciones, departamento, created_at: new Date().toISOString(), updated_at: varnull
+                name
             }
         })
-        res.status(201).json(aloja)
+        res.status(201).json(permission)
 
     } catch (error: any) {
         /*if(error?.code === 'P2002' && error?.meta?.target?.includes('email')){
@@ -25,7 +25,7 @@ export const createAloja = async (req: Request, res: Response): Promise<void> =>
     }
 }
 
-export const getallAlojas = async (req: Request, res: Response): Promise<void> => {
+export const getAllPermission= async (req: Request, res: Response): Promise<void> => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -45,7 +45,7 @@ export const getallAlojas = async (req: Request, res: Response): Promise<void> =
                     contains: filterValue,
                     mode: 'insensitive' // Para búsqueda case-insensitive
                 };
-            } else if (op === '$eq') {
+            }else if (op === '$eq') {
                 where[field] = Number(filterValue);
             }
         }
@@ -58,54 +58,46 @@ export const getallAlojas = async (req: Request, res: Response): Promise<void> =
 
     try {
 
-        const alojas = await prisma.findMany({
+        const permissions = await prisma.findMany({
             skip: skip,
             take: limit,
             where,
             orderBy: {
-                created_at: 'desc'
-            }, include: {
-                compras: true,
-                encargados: true,
-                habitaciones: true,
-                inventarios: true,
-                reservaciones: true// Incluye los detalles del alojamiento
+                id: 'asc'
+            },include: {
+                roles: true,
             }
         })
 
         const totalRecords = await prisma.count({ where });
-
-
         res.status(200).json({
             statusCode: 200,
             message: "Registros encontrados",
-            data: alojas,
+            data: permissions,
             count: totalRecords
         })
-
-
     } catch (error: any) {
         //console.log(error);
         res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
 
-export const getallAlojasById = async (req: Request, res: Response): Promise<void> => {
-    const alojaId = parseInt(req.params.id)
+export const getAllPermissionById = async (req: Request, res: Response): Promise<void> => {
+    const permiId = parseInt(req.params.id)
     try {
-        const aloja = await prisma.findUnique({
+        const permission = await prisma.findUnique({
             where: {
-                id: alojaId
+                id: permiId
             }
         })
-        if (!aloja) {
+        if (!permission) {
             res.status(404).json({ error: 'El alojamiento no fue encontrado' })
             return
         }
         res.status(200).json({
             statusCode: 200,
             message: "Registros encontrados",
-            data: aloja
+            data: permission
         })
     } catch (error: any) {
         //console.log(error);
@@ -113,32 +105,21 @@ export const getallAlojasById = async (req: Request, res: Response): Promise<voi
     }
 }
 
-export const updateAloja = async (req: Request, res: Response): Promise<void> => {
-    const alojaId = parseInt(req.params.id)
-    const { nombre, direccion, noHabitaciones, departamento } = req.body
+export const updatePermission = async (req: Request, res: Response): Promise<void> => {
+    const permiId = parseInt(req.params.id)
+    const { name } = req.body
     try {
         let dataToUpdate: any = { ...req.body }
-        if (nombre) {
-            dataToUpdate.nombre = nombre
-        }
-        if (direccion) {
-            dataToUpdate.direccion = direccion
-        }
-        if (noHabitaciones) {
-            dataToUpdate.noHabitaciones = noHabitaciones
-        }
-        if (departamento) {
-            dataToUpdate.departamento = departamento
+        if (name) {
+            dataToUpdate.name = name
         }
 
-        dataToUpdate.updated_at = new Date().toISOString()
-
-        const aloja = await prisma.update({
+        const permission = await prisma.update({
             where: {
-                id: alojaId
+                id: permiId
             }, data: dataToUpdate
         })
-        res.status(200).json(aloja)
+        res.status(200).json(permission)
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Alojamiento no encontrado' })
@@ -152,22 +133,23 @@ export const updateAloja = async (req: Request, res: Response): Promise<void> =>
     }
 }
 
-export const deleteAloja = async (req: Request, res: Response): Promise<void> => {
-    const alojaId = parseInt(req.params.id)
+export const deletePermission = async (req: Request, res: Response): Promise<void> => {
+    const permiId = parseInt(req.params.id)
     try {
         await prisma.delete({
             where: {
-                id: alojaId
+                id: permiId
             }
         })
         res.status(200).json({
-            message: `El usuario ${alojaId} ha sido eliminado`
+            message: `El usuario ${permiId} ha sido eliminado`
         }).end()
     } catch (error: any) {
         if (error?.code === 'P2025') {
             res.status(400).json({ error: 'Usuario no encontrado' })
             return
-        } else {
+        }
+        else {
             console.log(error);
             res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
             return

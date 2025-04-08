@@ -1,6 +1,6 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createSalida, deleteSalida, getallSalida, getallSalidaById, updateSalida } from '../controllers/salidasController';
+import { createRolePermission, deleteRolePermission, getAllRolePermission, getAllRolePermissionById, updateRolePermission} from '../controllers/rolePermissionController';
 import prisma from '../models/user';
 
 const router = express.Router();
@@ -23,6 +23,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
         next();
     })
 }
+
 
 const authorizePermission = (permission: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -70,11 +71,12 @@ const authorizePermission = (permission: string) => {
   };
 };
 
-router.post('/', authenticateToken,authorizePermission('CREATE_SALIDAS'), createSalida)
-router.get('/', authenticateToken, authorizePermission('GETALL_SALIDAS'), getallSalida)
-router.get('/:id', authenticateToken,authorizePermission('GETALLID_SALIDAS'),  getallSalidaById)
-router.put('/:id', authenticateToken, authorizePermission('UPDATE_SALIDAS'), updateSalida)
-router.delete('/:id', authenticateToken, authorizePermission('DELETE_SALIDAS'), deleteSalida)
-
+router.post('/', authenticateToken,authorizePermission('CREATE_ROL_PERMISSION') ,createRolePermission)
+router.get('/', authenticateToken, authorizePermission('GETALL_ROL_PERMISSION'), getAllRolePermission)
+router.get('/:id', authenticateToken, authorizePermission('GETID_ROL_PERMISSION'), getAllRolePermissionById)
+router.put('/:id', authenticateToken, authorizePermission('UPDATE_ROL_PERMISSION'), updateRolePermission)
+router.delete('/:id', authenticateToken, authorizePermission('DELETE_ROL_PERMISSION'), deleteRolePermission)
+/*router.get('/getByIdAlojaCli/:id', authenticateToken,  getByIdAlojaClientes)
+router.get('/getVentaCliente/:id', authenticateToken,  getAllVentaByIdClient)*/
 
 export default router;
