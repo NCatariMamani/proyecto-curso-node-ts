@@ -15,26 +15,38 @@ datasource db {
 
 
 model users {
-  id    Int     @id @default(autoincrement())
+  id    Int     @id @default(autoincrement()) 
   email String  @unique
   password  String
   created_at DateTime @default(now())
   updated_at DateTime?
   encargados encargados[]
-  roles     Role[]    @relation("usersRoles")
+  roleId Int
+  role     role   @relation(fields: [roleId], references: [id])
 }
 
-model Role {
-  id          Int       @id @default(autoincrement())
+model role {
+  id    Int     @id @default(autoincrement()) 
   name        String    @unique
-  permissions Permission[] @relation("RolePermissions")
-  users       users[]    @relation("usersRoles")
+  permissions rolePermission[]
+  users       users[] 
 }
 
-model Permission {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  roles     Role[]  @relation("RolePermissions")
+model permission {
+  id    Int     @id @default(autoincrement()) 
+  name  String @unique
+  roles rolePermission[]
+}
+
+model rolePermission {
+  id    Int     @id @default(autoincrement()) 
+  roleId       Int
+  permissionId Int
+
+  role        role       @relation(fields: [roleId], references: [id])
+  permission  permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId]) // Asegura que no haya duplicados en la tabla intermedia
 }
 
 

@@ -1,6 +1,7 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
 import { createHabitacion, deleteHabitacion, getallHabitaciones, getallHabitacionesById, updateHabitacion,getAllHabitacionUser } from '../controllers/habitacionesController';
+import prisma from '../models/user';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
@@ -23,11 +24,58 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-router.post('/', authenticateToken, createHabitacion)
-router.get('/', authenticateToken,  getallHabitaciones)
-router.get('/:id', authenticateToken,  getallHabitacionesById)
-router.put('/:id', authenticateToken,  updateHabitacion)
-router.delete('/:id', authenticateToken,  deleteHabitacion)
-router.get('/getAllHabUser/:id', authenticateToken,  getAllHabitacionUser)
+
+const authorizePermission = (permission: string) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+  
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+  
+        if (token) {
+          const decod: any = jwt.verify(token, JWT_SECRET);
+          console.log(decod.id);
+          const user = await prisma.findUnique({
+            where: { id: decod.id },
+            include: {
+              role: {
+                include: {
+                  permissions: {
+                    include: { permission: true },
+                  },
+                },
+              },
+            },
+          });
+  
+          if (!user) {
+            return res.status(403).json({ error: 'Usuario no encontrado' });
+          }
+  
+          // Verifica si el usuario tiene el permiso requerido
+          const hasPermission = user.role.permissions.some(
+            (p: any) => p.permission.name === permission
+          );
+  
+          if (!hasPermission) {
+            return res.status(403).json({ error: 'No tienes permisos para esta acción' });
+          }
+  
+          next();
+        }
+  
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error en la autorización' });
+      }
+    };
+  };
+
+router.post('/', authenticateToken, authorizePermission('CREATE_HABITACIONES'),createHabitacion)
+router.get('/', authenticateToken, authorizePermission('GETALL_HABITACIONES'), getallHabitaciones)
+router.get('/:id', authenticateToken, authorizePermission('GETALLID_HABITACIONES'), getallHabitacionesById)
+router.put('/:id', authenticateToken, authorizePermission('UPDATE_HABITACIONES'), updateHabitacion)
+router.delete('/:id', authenticateToken, authorizePermission('DELETE_HABITACIONES'), deleteHabitacion)
+router.get('/getAllHabUser/:id', authenticateToken, authorizePermission('GETALLHABUSER_HABITACIONES'), getAllHabitacionUser)
 
 export default router;

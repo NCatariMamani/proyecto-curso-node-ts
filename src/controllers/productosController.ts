@@ -15,11 +15,11 @@ export const createProducto = async (req: Request, res: Response): Promise<void>
             return
         } */
         //const hashedPassword = await hashPasword(password)
-        const varnull:any = null
+        const varnull: any = null
 
         const producto = await prisma.create({
             data: {
-                nombre ,precio, estado ,departamento ,created_at: new Date().toISOString(), updated_at: varnull
+                nombre, precio, estado, departamento, created_at: new Date().toISOString(), updated_at: varnull
             }
         })
         res.status(201).json(producto)
@@ -53,7 +53,7 @@ export const getallProductos = async (req: Request, res: Response): Promise<void
                     contains: filterValue,
                     mode: 'insensitive' // Para búsqueda case-insensitive
                 };
-            }else if (op === '$eq') {
+            } else if (op === '$eq') {
                 where[field] = Number(filterValue);
             }
         }
@@ -163,5 +163,60 @@ export const deleteProducto = async (req: Request, res: Response): Promise<void>
             res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
             return
         }
+    }
+}
+
+export const getAllProducInven = async (req: Request, res: Response): Promise<void> => {
+    const productoId = parseInt(req.params.id);
+    try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        let where: { [key: string]: any } = {
+            productoInventarios: {
+                some: {
+                    inventarios: {
+                        alojamientos: {
+                            id: productoId
+                        }
+                    }
+                }
+            }
+
+        };
+
+        const producto = await prisma.findMany({
+            skip: skip,
+            take: limit,
+            select: {
+                id: true,
+                nombre: true,
+                precio: true,
+                productoInventarios: {
+                    select: {
+                        id: true,
+                        stock: true
+                    }
+                }
+            },
+            where: where
+        });
+
+        if (!producto) {
+            res.status(404).json({ error: 'El alojamiento no fue encontrado' })
+            return
+        }
+
+        const totalRecords = await prisma.count({ where });
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: producto,
+            count: totalRecords
+        })
+        //res.status(200).json(producto)
+    } catch (error: any) {
+        console.log(error);
+        res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
     }
 }
