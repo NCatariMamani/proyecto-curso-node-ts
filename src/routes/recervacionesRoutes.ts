@@ -1,6 +1,6 @@
 import express, { NextFunction,Request,Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { createRecervacion, deleteRecervacion, getallRecervaciones, getallRecervacionById, updateRecervacion,generatePDF } from '../controllers/recervacionesController';
+import { createRecervacion, deleteRecervacion, getallRecervaciones, getallRecervacionById, updateRecervacion,generatePDF, getIdHabReser,marcarComoSucia } from '../controllers/recervacionesController';
 import prisma from '../models/user';
 
 const router = express.Router();
@@ -76,6 +76,9 @@ router.post('/generatepdf', authenticateToken, authorizePermission('GENERATEPDF_
 router.get('/:id', authenticateToken, authorizePermission('GETALLID_RESERVACION'), getallRecervacionById)
 router.put('/:id', authenticateToken,authorizePermission('UPDATE_RESERVACION'),  updateRecervacion)
 router.delete('/:id', authenticateToken, authorizePermission('DELETE_RESERVACION'), deleteRecervacion)
+/// INTEGRAR A ROLES AND PERMISIONS
+router.get('/getIdHabReser/:id', authenticateToken, authorizePermission('GETALLID_RESERVACION'), getIdHabReser)
+router.put('/HabSucios/:id', authenticateToken,authorizePermission('UPDATE_RESERVACION'),  marcarComoSucia)
 
 
 export default router;

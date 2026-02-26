@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
 import prisma from '../models/recervacion';
+import habitaciones from '../models/habitacion';
 import { PrismaClient } from '@prisma/client';
+import { format } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { formatDate, formatDateToString } from '../utils/dateFormatter';
 
 //import { Pool } from 'pg';
 //import { PDFDocument } from 'pdfkit';
@@ -9,6 +13,7 @@ import { PrismaClient } from '@prisma/client';
 
 //const express = require('express');
 //const fs = require('fs');
+const prisma1 = new PrismaClient();
 const PDFDocument = require('pdfkit-table');
 const moment = require('moment');
 const path = require('path');
@@ -16,7 +21,7 @@ const path = require('path');
 
 export const createRecervacion = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { clienteId, fecha, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, alojamientoId, totalVenta, cambio, estadoCambio, montoEntregado } = req.body;
+        const { clienteId, fecha, fechaSalida, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, alojamientoId, totalVenta, cambio, estadoCambio, montoEntregado } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -27,10 +32,12 @@ export const createRecervacion = async (req: Request, res: Response): Promise<vo
         } */
         //const hashedPassword = await hashPasword(password)
         const varnull: any = null
+        const fechaBolivia = new Date();
+        fechaBolivia.setHours(fechaBolivia.getHours() - 4); // Ajuste a UTC-4
 
         const recervacion = await prisma.create({
             data: {
-                fecha, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, alojamientoId, totalVenta, cambio, estadoCambio, montoEntregado, clienteId, created_at: new Date().toISOString(), updated_at: varnull
+                fecha: formatDateToString(fecha), fechaSalida: formatDateToString(fechaSalida), horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, alojamientoId, totalVenta, cambio, estadoCambio, montoEntregado, clienteId, created_at: formatDate(new Date()), updated_at: varnull
             }
         })
         res.status(201).json(recervacion)
@@ -151,11 +158,14 @@ export const getallRecervacionById = async (req: Request, res: Response): Promis
 
 export const updateRecervacion = async (req: Request, res: Response): Promise<void> => {
     const recervacionId = parseInt(req.params.id)
-    const { clienteId, fecha, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, totalVenta, cambio, estadoCambio, montoEntregado } = req.body;
+    const { clienteId, fecha, fechaSalida, horaEntrada, horaSalida, horaProgramada, tiempo, compania, costoHabitacion, costoExtra, total, habitacionId, encargadoId, totalVenta, cambio, estadoCambio, montoEntregado } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (fecha) {
-            dataToUpdate.fecha = fecha
+            dataToUpdate.fecha =  formatDate(new Date(fecha))
+        }
+        if (fechaSalida) {
+            dataToUpdate.fechaSalida = formatDate(new Date(fechaSalida))
         }
         if (horaEntrada) {
             dataToUpdate.horaEntrada = horaEntrada
@@ -202,7 +212,7 @@ export const updateRecervacion = async (req: Request, res: Response): Promise<vo
         if (montoEntregado) {
             dataToUpdate.montoEntregado = montoEntregado
         }
-        dataToUpdate.updated_at = new Date().toISOString()
+        dataToUpdate.updated_at =  formatDate(new Date())
 
         const recervaciones = await prisma.update({
             where: {
@@ -226,6 +236,18 @@ export const updateRecervacion = async (req: Request, res: Response): Promise<vo
 export const deleteRecervacion = async (req: Request, res: Response): Promise<void> => {
     const recervacionId = parseInt(req.params.id)
     try {
+        /* const reservacion = await prisma1.reservaciones.findUnique({
+             where: { id: recervacionId }
+         });
+         const habitacionId = reservacion?.habitacionId;
+         // 3. Actualizar la habitación
+         await prisma1.habitaciones.update({
+             where: { id: habitacionId },
+             data: {
+                 estado: 'LIBRE',
+                 updated_at: new Date()
+             }
+         });*/
         await prisma.delete({
             where: {
                 id: recervacionId
@@ -248,6 +270,58 @@ export const deleteRecervacion = async (req: Request, res: Response): Promise<vo
         }
     }
 }
+
+/*export const deleteReservacion = async (req: Request, res: Response): Promise<void> => {
+    const reservacionId = parseInt(req.params.id);
+    
+    try {
+        // 1. Obtener la reservación
+        const reservacion = await prisma.findUnique({
+            where: { id: reservacionId }
+        });
+
+        if (!reservacion) {
+            res.status(404).json({ error: 'Reservación no encontrada' });
+            return;
+        }
+
+        const habitacionId = reservacion.habitacionId;
+
+        // 2. Eliminar la reservación
+        await prisma.reservacion.delete({
+            where: { id: reservacionId }
+        });
+
+        // 3. Actualizar la habitación
+        await prisma1.habitaciones.update({
+            where: { id: habitacionId },
+            data: {
+                estado: 'LIBRE',
+                updated_at: new Date()
+            }
+        });
+
+        res.status(200).json({
+            message: 'Reservación eliminada y habitación liberada',
+            habitacionId: habitacionId,
+            estado: 'LIBRE'
+        });
+
+    } catch (error: any) {
+        // Manejo de errores...
+         if (error?.code === 'P2025') {
+            res.status(400).json({ error: 'Usuario no encontrado' })
+            return
+        } else if (error?.code === 'P2003') {
+            res.status(409).json({ error: 'No se puede completar la operación debido a una restricción de clave externa.' })
+            return
+        } else {
+            console.log(error);
+            res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
+            return
+        }
+    }
+};*/
 
 
 export const generatePDF = async (req: Request, res: Response): Promise<void> => {
@@ -285,7 +359,7 @@ export const generatePDF = async (req: Request, res: Response): Promise<void> =>
         const sumaTotal = data.reduce((acumulado, reserva) => {
             const totalConvertido = parseFloat(reserva.total.replace(' Bs', '').replace(',', '.')) || 0;
             return acumulado + totalConvertido;
-          }, 0);
+        }, 0);
 
         const doc = new PDFDocument({
             size: 'LETTER', // legal = oficio
@@ -362,28 +436,13 @@ export const generatePDF = async (req: Request, res: Response): Promise<void> =>
                 align: 'center',
                 borderWidth: 1
             }
-        };
-
-
+        }
 
         doc.table(tabla, {
             prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
             prepareRow: (row: any, i: number) => doc.font('Helvetica').fontSize(12)
-        });
+        })
 
-        /* const table = {
-          headers: ['ID', 'Nombre', 'Edad'],
-          rows: [
-            [1, 'Juan', 25],
-            [2, 'María', 30],
-            [3, 'Pedro', 28],
-          ]
-        };
-      
-        // Generamos la tabla
-        doc.table(table);*/
-
-        // Contenido
         doc.font('Helvetica')
             .fontSize(12)
             .text(configuracion.contenido, {
@@ -428,6 +487,38 @@ export const generatePDF = async (req: Request, res: Response): Promise<void> =>
 
 }
 
+
+export const getIdHabReser = async (req: Request, res: Response): Promise<void> => {
+    const habId = parseInt(req.params.id)
+    try {
+        const recervaciones = await prisma.findFirst({
+            where: {
+                habitacionId: Number(habId)
+            },
+            orderBy: { created_at: 'desc' },
+            include: {
+                clientes: true,
+                habitaciones: true,
+                encargados: true
+            }
+        })
+        if (!recervaciones) {
+            res.status(404).json({ error: 'No se encontraron datos' })
+            return
+        }
+        //const totalRecords = await prisma.count({ where });
+        res.status(200).json({
+            statusCode: 200,
+            message: "Registros encontrados",
+            data: recervaciones ? [recervaciones] : []
+        });
+        //res.status(200).json(recervaciones)
+    } catch (error: any) {
+        console.log(error);
+        res.status(500).json({ error: 'Hubo un error, pruebe mas tarde' })
+    }
+}
+
 function convertirABsNumero(valor: string, valor1: string) {
     // Remover 'Bs' y espacios, luego reemplazar coma por punto y convertir a númer
     let resultado = null;
@@ -453,5 +544,42 @@ function convertDate(date: Date) {
     const [año, mes, dia] = fechaISO.split('-');
     const fechaFormateada = `${dia}/${mes}/${año}`;
     return fechaFormateada;
+}
+
+export const marcarComoSucia = async (req: Request, res: Response): Promise<void> => {
+    const habitacionId = parseInt(req.params.id, 10);
+    try {
+        const ultimaReservacion = await prisma.findFirst({
+            where: { habitacionId },
+            orderBy: { fecha: 'desc' },
+        });
+
+        if (!ultimaReservacion) {
+            throw new Error('No se encontró ninguna reservación para esta habitación.');
+        }
+
+        const horaActual = format(new Date(), 'hh:mm aaaa', { locale: enUS }).toLowerCase();
+
+        await prisma.update({
+            where: { id: ultimaReservacion.id },
+            data: {
+                compania: 'SUCIO',
+                horaSalida: horaActual,
+                updated_at: new Date(),
+            },
+        });
+
+        // Actualizar habitación
+        await habitaciones.update({
+            where: { id: habitacionId },
+            data: {
+                estado: 'SUCIO',
+                updated_at: new Date(),
+            },
+        });
+        res.json({ message: `Habitación ${habitacionId} actualizada a estado SUCIO` });
+    } catch (error) {
+        res.status(500).json({ error: 'Ocurrió un error al actualizar la habitación' });
+    }
 }
 

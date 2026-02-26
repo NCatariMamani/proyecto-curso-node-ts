@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
 import prisma from '../models/habitacion';
+import { formatDate } from '../utils/dateFormatter';
 
 
 export const createHabitacion = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { noHabitacion, preferencias, estado, alojamientoId } = req.body;
+        const { noHabitacion, preferencias, estado, alojamientoId,precioTemporal,precioNoche } = req.body;
         /*if(!email) {
             res.status(404).json({message: 'El email es obligatorio'})
             return
@@ -19,7 +20,7 @@ export const createHabitacion = async (req: Request, res: Response): Promise<voi
 
         const habitacion = await prisma.create({
             data: {
-                noHabitacion, preferencias, estado, alojamientoId, created_at: new Date().toISOString(), updated_at: varnull
+                noHabitacion, preferencias, estado, alojamientoId, precioTemporal, precioNoche, created_at: formatDate( new Date()), updated_at: varnull
             }
         })
         res.status(201).json(habitacion)
@@ -122,7 +123,7 @@ export const getallHabitacionesById = async (req: Request, res: Response): Promi
 
 export const updateHabitacion = async (req: Request, res: Response): Promise<void> => {
     const habitacionId = parseInt(req.params.id)
-    const { noHabitacion, preferencias, estado, alojamientoId } = req.body;
+    const { noHabitacion, preferencias, estado, alojamientoId,precioTemporal,precioNoche  } = req.body;
     try {
         let dataToUpdate: any = { ...req.body }
         if (noHabitacion) {
@@ -137,7 +138,13 @@ export const updateHabitacion = async (req: Request, res: Response): Promise<voi
         if (alojamientoId) {
             dataToUpdate.alojamientoId = alojamientoId
         }
-        dataToUpdate.updated_at = new Date().toISOString()
+         if (precioTemporal) {
+            dataToUpdate.precioTemporal = precioTemporal
+        }
+         if (precioNoche) {
+            dataToUpdate.precioNoche = precioNoche
+        }
+        dataToUpdate.updated_at = formatDate(new Date())
 
         const habitacion = await prisma.update({
             where: {

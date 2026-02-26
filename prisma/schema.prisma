@@ -42,7 +42,6 @@ model rolePermission {
   id    Int     @id @default(autoincrement()) 
   roleId       Int
   permissionId Int
-
   role        role       @relation(fields: [roleId], references: [id])
   permission  permission @relation(fields: [permissionId], references: [id])
 
@@ -99,6 +98,8 @@ model habitaciones {
   noHabitacion Int
   preferencias String
   estado String
+  precioTemporal Decimal @db.Decimal(10, 2)
+  precioNoche Decimal @db.Decimal(10, 2)
   reservaciones reservaciones[]
   alojamientoId Int
   alojamientos alojamientos @relation(fields: [alojamientoId], references: [id])
@@ -161,6 +162,7 @@ model productoInventarios {
 model reservaciones {
   id    Int     @id @default(autoincrement())
   fecha DateTime
+  fechaSalida DateTime?
   horaEntrada String
   horaSalida String?
   horaProgramada String

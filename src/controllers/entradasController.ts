@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { hashPasword } from '../services/password.service';
 import prisma from '../models/entrada';
+import { formatDate } from '../utils/dateFormatter';
 
 
 export const createEntrada = async (req: Request, res: Response): Promise<void> => {
@@ -19,7 +20,7 @@ export const createEntrada = async (req: Request, res: Response): Promise<void> 
 
         const entrada = await prisma.create({
             data: {
-                descripcion,cantidad,fecha,productoInventarioId, created_at: new Date().toISOString(), updated_at: varnull 
+                descripcion,cantidad,fecha,productoInventarioId, created_at: formatDate(new Date()), updated_at: varnull 
             }
         })
         res.status(201).json(entrada)
@@ -155,7 +156,7 @@ export const updateEntrada = async (req: Request, res: Response): Promise<void> 
         }
         
 
-        dataToUpdate.updated_at = new Date().toISOString()
+        dataToUpdate.updated_at = formatDate(new Date())
 
         const entrada = await prisma.update({
             where: {
